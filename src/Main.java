@@ -18,7 +18,6 @@ class Main {
 
             String input = scanner.nextLine();
             if (input.equals("end")) {
-                // basket.saveTxt(new File("basket.txt"));
                 basket.saveBin(new File("basket.bin"));
                 System.out.println("Программа завершена!");
                 break;
