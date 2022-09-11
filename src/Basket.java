@@ -69,7 +69,7 @@ public class Basket implements Serializable{
         if (textFile.exists() & textFile.length() != 0) {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(textFile));) {
                 int count = 0;
-                int size = 4;
+                int size = 5;
                 String[] products = new String[size];
                 int[] basket = new int[size];
                 int[] price = new int[size];
