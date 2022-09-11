@@ -1,11 +1,12 @@
 import java.io.*;
-public class Basket {
+
+public class Basket implements Serializable{
     private String[] products;
     private int[] price;
     private int[] basket;
 
     public Basket(String[] products, int[] price) {
-        Basket basket1 = loadFromTxtFile(new File("basket.txt"));
+        Basket basket1 = loadFromBinFile(new File("basket.bin"));
         if (basket1 != null) {
             this.products = basket1.getProducts();
             this.price = basket1.getPrice();
@@ -21,22 +22,31 @@ public class Basket {
         this.price = price;
         this.basket = basket;
     }
-    public void printCart() { //метод вывода на экран покупательской корзины
+
+    public void addToCart(int productNum, int amount) {
+        basket[productNum] += amount;
+    }
+
+    public void printCart() {
         System.out.println("Ваша корзина:");
         int sumProducts = 0;
         for (int i = 0; i < basket.length; i++) {
             if (basket[i] != 0) {
-                System.out.println(products[i] + " " + basket[i] + " шт " + price[i] + " руб/шт "
-                + (basket[i] * price[i]) + " рублей в сумме");
+                System.out.println(products[i] + " " + basket[i] + " шт " + price[i] + " руб/шт " + (basket[i] * price[i]) + " рублей в сумме");
                 sumProducts += basket[i] * price[i];
             }
         }
         System.out.println("Итого: " + sumProducts);
+
     }
-    public void addToCart(int productNum, int amount) {
-        basket[productNum] += amount;
+    public void saveBin(File file) { // метод для сохранения в файл в бинарном формате
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file))) {
+            objectOutputStream.writeObject(this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public void saveTxt(File textFile) {//метод сохранения корзины в текстовый файл
+    public void saveTxt(File textFile) {
         try (BufferedWriter out = new BufferedWriter(new FileWriter(textFile))) {
             for (int i = 0; i < products.length; i++) {
                 out.write(products[i] + " " + basket[i] + " " + price[i] + "\r\n");
@@ -45,12 +55,21 @@ public class Basket {
             throw new RuntimeException(e);
         }
     }
-    public static Basket loadFromTxtFile(File textFile) {//метод восстановления объекта корзины из текстового файла
+    public static Basket loadFromBinFile(File file) { // метод для загрузки корзины из бинарного файла
+        Basket rezult;
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file))) {
+            rezult = (Basket) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            rezult = null;
+        }
+        return rezult;
+    }
+    public static Basket loadFromTxtFile(File textFile) {
         Basket rezult = null;
         if (textFile.exists() & textFile.length() != 0) {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(textFile));) {
                 int count = 0;
-                int size = 5;
+                int size = 4;
                 String[] products = new String[size];
                 int[] basket = new int[size];
                 int[] price = new int[size];
