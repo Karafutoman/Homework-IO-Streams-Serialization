@@ -60,7 +60,7 @@ public class Basket implements Serializable{
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file))) {
             rezult = (Basket) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            rezult = null;
+            throw new RuntimeException(String.format("Файл %s отсутствует", file.getAbsolutePath()));;
         }
         return rezult;
     }
